@@ -1,0 +1,5 @@
+https://github.com/microsoft/FERPlus  == 7 + 1
+http://www.consortium.ri.cmu.edu/ckagree/
+https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data  == 7 - 1
+http://grail.cs.washington.edu/projects/deepexpr/ferg-db.html
+http://iilab.utep.edu/stimuli.htm  == 2 - 1
