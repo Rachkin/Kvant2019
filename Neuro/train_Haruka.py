@@ -181,15 +181,16 @@ def train(net, X_train, y_train, X_test, y_test):
             optimizer.step()
 
         net.eval()
-        test_preds = net.forward(X_test)
-        test_loss_history.append(loss(test_preds, y_test).data.cpu())
-
-        accuracy = (test_preds.argmax(dim=1) == y_test).float().mean().data.cpu()
-        test_accuracy_history.append(accuracy)
-
-        print(accuracy)
-        print(test_loss_history[-1])
-        print("==============")
+        with torch.no_grad():
+            test_preds = net.forward(X_test)
+            test_loss_history.append(loss(test_preds, y_test).data.cpu())
+    
+            accuracy = (test_preds.argmax(dim=1) == y_test).float().mean().data.cpu()
+            test_accuracy_history.append(accuracy)
+    
+            print(accuracy)
+            print(test_loss_history[-1])
+            print("==============")
     print('---------------')
     return test_accuracy_history, test_loss_history
 
