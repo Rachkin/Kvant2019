@@ -20,13 +20,14 @@ torch.backends.cudnn.deterministic = True
 import torchvision.datasets
 
 #torch.pytorch.set_default_tensor_type('torch.DoubleTensor')
-
+w = 48
+h = 48
 
 x = pd.read_csv('fer2013.csv')
 data = x.values
 y = data[:, 0]
 pixels = data[:, 1]
-X = np.zeros((pixels.shape[0], 48*48))
+X = np.zeros((pixels.shape[0], w*h))
 
 for ix in range(X.shape[0]):
     p = pixels[ix].split(' ')
@@ -37,8 +38,11 @@ x = x / 255
 y = y.astype("long")
 X_train = x[0:28710, :]
 y_train = y[0:28710]
-X_test = x[28710:32300, :]
-y_test = y[28710:32300]
+X_test = x[28710:30300, :]
+y_test = y[28710:30300]
+
+X_valid = x[30300:32300, :]
+y_valid = y[30300:32300]
 
 
 datagen = ImageDataGenerator(
@@ -62,11 +66,17 @@ y_train = torch.from_numpy(y_train)
 X_test = torch.from_numpy(X_test)
 y_test = torch.from_numpy(y_test)
 
+X_valid = torch.from_numpy(X_valid)
+y_valid = torch.from_numpy(y_valid)
+
 print(y_train[0])
 X_train = torch.FloatTensor(X_train)
 y_train = torch.LongTensor(y_train.long())
 X_test = torch.FloatTensor(X_test)
 y_test = torch.LongTensor(y_test.long())
+X_valid = torch.FloatTensor(X_valid)
+y_valid = torch.LongTensor(y_valid.long())
 
-X_train = torch.reshape(X_train, (X_train.shape[0], 1 , 48, 48 ))
-X_test = torch.reshape(X_test, (X_test.shape[0], 1 ,48, 48))
+X_train = torch.reshape(X_train, (X_train.shape[0], 1 , w, h))
+X_test = torch.reshape(X_test, (X_test.shape[0], 1 , w, h))
+X_valid = torch.reshape(X_valid, (X_valid.shape[0], 1 , w, h))

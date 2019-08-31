@@ -24,19 +24,19 @@ class HarukaNet(torch.nn.Module):
         
         self.batch_norm0 = torch.nn.BatchNorm2d(1)
 
-        self.conv1_1 = torch.nn.Conv2d(1, n_chanells, 3, padding=0)
+        self.conv1_1 = torch.nn.Conv2d(1, n_chanells, 3, padding=1)
 #        self.conv1_2 = torch.nn.Conv2d(8, 8, 3, padding=1)
         self.act1  = torch.nn.ReLU()
         self.batch_norm1 = torch.nn.BatchNorm2d(n_chanells)
         self.pool1 = torch.nn.MaxPool2d(2, 2)
         
-        self.conv2_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=0)
+        self.conv2_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=1)
 #        self.conv2_2 = torch.nn.Conv2d(8, 8, 3, padding=1)
         self.act2  = torch.nn.ReLU()
         self.batch_norm2 = torch.nn.BatchNorm2d(n_chanells)
         self.pool2 = torch.nn.MaxPool2d(2, 2)
         
-        self.conv3_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=0)
+        self.conv3_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=1)
 #        self.conv3_2 = torch.nn.Conv2d(16, 16, 3, padding=1)
         self.act3  = torch.nn.ReLU()
         self.batch_norm3 = torch.nn.BatchNorm2d(n_chanells)
@@ -50,14 +50,29 @@ class HarukaNet(torch.nn.Module):
 #        self.conv5_2 = torch.nn.Conv2d(32, 32, 3, padding=1)
         self.act5  = torch.nn.ReLU()
         self.batch_norm5 = torch.nn.BatchNorm2d(n_chanells)
+        
+        self.conv6_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=1)
+#        self.conv6_2 = torch.nn.Conv2d(32, 32, 3, padding=1)
+        self.act6  = torch.nn.ReLU()
+        self.batch_norm6 = torch.nn.BatchNorm2d(n_chanells)
+        
+        self.conv7_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=1)
+#        self.conv6_2 = torch.nn.Conv2d(32, 32, 3, padding=1)
+        self.act7  = torch.nn.ReLU()
+        self.batch_norm7 = torch.nn.BatchNorm2d(n_chanells)
+        
+        self.conv8_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=1)
+#        self.conv6_2 = torch.nn.Conv2d(32, 32, 3, padding=1)
+        self.act8  = torch.nn.ReLU()
+        self.batch_norm8 = torch.nn.BatchNorm2d(n_chanells)
 #
-        self.fc1   = torch.nn.Linear(8 * 8 * n_chanells, 256)
-        self.act6  = torch.nn.Tanh()
-        self.batch_norm6 = torch.nn.BatchNorm1d(256)
+        self.fc1   = torch.nn.Linear(12 * 12 * n_chanells, 256)
+        self.actf1  = torch.nn.Tanh()
+        self.batch_normf1 = torch.nn.BatchNorm1d(256)
         
         self.fc2   = torch.nn.Linear(256, 64)
-        self.act7  = torch.nn.Tanh()
-        self.batch_norm7 = torch.nn.BatchNorm1d(64)
+        self.actf2  = torch.nn.Tanh()
+        self.batch_normf2 = torch.nn.BatchNorm1d(64)
         
         self.fc3   = torch.nn.Linear(64, 7)
     
@@ -72,19 +87,19 @@ class HarukaNet(torch.nn.Module):
         x = self.batch_norm1(x)
         x = self.pool1(x)
         
-       # t = x
+        t = x
         x = self.conv2_1(x)
 #        x = self.conv2_2(x)
         x = self.act2(x)
-       # x += t
+        x += t
         x = self.batch_norm2(x)
         x = self.pool2(x)
         
-        #t = x
+        t = x
         x = self.conv3_1(x)
 #        x = self.conv3_2(x)
         x = self.act3(x)
-       # x += t
+        x += t
         x = self.batch_norm3(x)
         
         t = x
@@ -101,13 +116,34 @@ class HarukaNet(torch.nn.Module):
         x += t
         x = self.batch_norm5(x)
         
+        t = x
+        x = self.conv6_1(x)
+#        x = self.conv6_2(x)
+        x = self.act6(x)
+        x += t
+        x = self.batch_norm6(x)
+        
+        t = x
+        x = self.conv7_1(x)
+#        x = self.conv6_2(x)
+        x = self.act7(x)
+        x += t
+        x = self.batch_norm7(x)
+        
+        t = x
+        x = self.conv8_1(x)
+#        x = self.conv6_2(x)
+        x = self.act8(x)
+        x += t
+        x = self.batch_norm8(x)
+        
         x = x.view(x.size(0), x.size(1) * x.size(2) * x.size(3))
         x = self.fc1(x)
-        x = self.act6(x)
-        x = self.batch_norm6(x)
+        x = self.actf1(x)
+        x = self.batch_normf1(x)
         x = self.fc2(x)
-        x = self.act7(x)
-        x = self.batch_norm7(x)
+        x = self.actf2(x)
+        x = self.batch_normf2(x)
         x = self.fc3(x)
         
         return x
@@ -160,9 +196,10 @@ def train(net, X_train, y_train, X_test, y_test):
 accuracies = {}
 losses = {}
 
+net = HarukaNet()
 
 accuracies['='], losses['='] = \
-    train(HarukaNet(), 
+    train(net, 
           X_train, y_train, X_test, y_test)
 
 import matplotlib.pyplot as plt
@@ -176,3 +213,8 @@ for experiment_id in losses.keys():
     plt.plot(losses[experiment_id], label=experiment_id)
 plt.legend()
 plt.title('Validation Loss');
+
+net.eval()
+test_preds = net.forward(X_valid)
+accuracy = (test_preds.argmax(dim=1) == y_valid).float().mean().data.cpu()
+print(accuracy)
