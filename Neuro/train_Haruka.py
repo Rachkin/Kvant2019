@@ -20,7 +20,7 @@ class HarukaNet(torch.nn.Module):
     def __init__(self):
         super(HarukaNet, self).__init__()
         
-        n_chanells = 64
+        n_chanells = 32
         
         self.batch_norm0 = torch.nn.BatchNorm2d(1)
 
@@ -65,6 +65,21 @@ class HarukaNet(torch.nn.Module):
 #        self.conv6_2 = torch.nn.Conv2d(32, 32, 3, padding=1)
         self.act8  = torch.nn.ReLU()
         self.batch_norm8 = torch.nn.BatchNorm2d(n_chanells)
+        
+        self.conv9_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=1)
+#        self.conv6_2 = torch.nn.Conv2d(32, 32, 3, padding=1)
+        self.act9  = torch.nn.ReLU()
+        self.batch_norm9 = torch.nn.BatchNorm2d(n_chanells)
+        
+        self.conv10_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=1)
+#        self.conv6_2 = torch.nn.Conv2d(32, 32, 3, padding=1)
+        self.act10  = torch.nn.ReLU()
+        self.batch_norm10 = torch.nn.BatchNorm2d(n_chanells)
+        
+        self.conv11_1 = torch.nn.Conv2d(n_chanells, n_chanells, 3, padding=1)
+#        self.conv6_2 = torch.nn.Conv2d(32, 32, 3, padding=1)
+        self.act11  = torch.nn.ReLU()
+        self.batch_norm11 = torch.nn.BatchNorm2d(n_chanells)
 #
         self.fc1   = torch.nn.Linear(12 * 12 * n_chanells, 256)
         self.actf1  = torch.nn.Tanh()
@@ -74,7 +89,11 @@ class HarukaNet(torch.nn.Module):
         self.actf2  = torch.nn.Tanh()
         self.batch_normf2 = torch.nn.BatchNorm1d(64)
         
-        self.fc3   = torch.nn.Linear(64, 7)
+        self.fc3   = torch.nn.Linear(64, 64)
+        self.act_fc3  = torch.nn.Tanh()
+        self.batch_norm_fc3 = torch.nn.BatchNorm1d(64)
+        
+        self.fc4   = torch.nn.Linear(64, 7)
     
     def forward(self, x):
        # x = x.float(x)
@@ -86,70 +105,100 @@ class HarukaNet(torch.nn.Module):
         #x += t
         x = self.batch_norm1(x)
         x = self.pool1(x)
-        
+#############################################        
         t = x
         x = self.conv2_1(x)
 #        x = self.conv2_2(x)
-        x = self.act2(x)
         x += t
+        x = self.act2(x)
         x = self.batch_norm2(x)
         x = self.pool2(x)
-        
+#############################################        
         t = x
         x = self.conv3_1(x)
 #        x = self.conv3_2(x)
-        x = self.act3(x)
         x += t
+        x = self.act3(x)
         x = self.batch_norm3(x)
-        
+#############################################       
         t = x
         x = self.conv4_1(x)
 #        x = self.conv4_2(x)
         x = self.act4(x)
-        x += t
+#        x += t
         x = self.batch_norm4(x)
-#        
-        t = x
+        
+#        t = x
         x = self.conv5_1(x)
 #        x = self.conv5_2(x)
-        x = self.act5(x)
         x += t
+        x = self.act5(x)
         x = self.batch_norm5(x)
-        
+#############################################        
         t = x
         x = self.conv6_1(x)
 #        x = self.conv6_2(x)
         x = self.act6(x)
-        x += t
+#        x += t
         x = self.batch_norm6(x)
         
-        t = x
+#        t = x
         x = self.conv7_1(x)
 #        x = self.conv6_2(x)
-        x = self.act7(x)
         x += t
+        x = self.act7(x) 
         x = self.batch_norm7(x)
-        
+#############################################       
         t = x
         x = self.conv8_1(x)
 #        x = self.conv6_2(x)
         x = self.act8(x)
-        x += t
+#        x += t
         x = self.batch_norm8(x)
         
+#        t = x
+        x = self.conv9_1(x)
+#        x = self.conv6_2(x)
+        x += t
+        x = self.act9(x)
+        x = self.batch_norm9(x)
+#############################################       
+        t = x
+        x = self.conv10_1(x)
+#        x = self.conv6_2(x)
+        x = self.act10(x)
+#        x += t
+        x = self.batch_norm10(x)
+        
+#        t = x
+        x = self.conv11_1(x)
+#        x = self.conv6_2(x)
+        x += t
+        x = self.act11(x)
+        x = self.batch_norm11(x)
+#############################################        
         x = x.view(x.size(0), x.size(1) * x.size(2) * x.size(3))
         x = self.fc1(x)
         x = self.actf1(x)
         x = self.batch_normf1(x)
+        ####################################
         x = self.fc2(x)
         x = self.actf2(x)
         x = self.batch_normf2(x)
+        ####################################
         x = self.fc3(x)
+        x = self.act_fc3(x)
+        x = self.batch_norm_fc3(x)
+        ####################################
+        x = self.fc4(x)
         
         return x
-###################################################
+#############################################
+#device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cpu')
+#device = torch.device('cuda:0')
+
 def train(net, X_train, y_train, X_test, y_test):
-    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     net = net.to(device)
     loss = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(net.parameters(), lr=1.0e-3)
@@ -193,7 +242,7 @@ def train(net, X_train, y_train, X_test, y_test):
             print("==============")
     print('---------------')
     return test_accuracy_history, test_loss_history
-
+##############################################
 accuracies = {}
 losses = {}
 
@@ -214,8 +263,12 @@ for experiment_id in losses.keys():
     plt.plot(losses[experiment_id], label=experiment_id)
 plt.legend()
 plt.title('Validation Loss');
+########################################
+X_valid = X_valid.to(device)
+y_valid = y_valid.to(device)
 
 net.eval()
-test_preds = net.forward(X_valid)
-accuracy = (test_preds.argmax(dim=1) == y_valid).float().mean().data.cpu()
-print(accuracy)
+with torch.no_grad():
+    test_preds = net.forward(X_valid)
+    accuracy = (test_preds.argmax(dim=1) == y_valid).float().mean().data.cpu()
+    print(accuracy)
