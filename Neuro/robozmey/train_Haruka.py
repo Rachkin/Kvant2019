@@ -15,12 +15,14 @@ torch.backends.cudnn.deterministic = True
 device = torch.device('cpu')
 #device = torch.device('cuda:0')
 
-def train(net, X_train, y_train, X_test, y_test):
+def train(net, X_train, y_train, X_test, y_test, bestnet):
     net = net.to(device)
     loss = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(net.parameters(), lr=1.0e-3)
     
     batch_size = 100
+    
+    best_accuracy = 0.0
 
     test_accuracy_history = []
     test_loss_history = []
@@ -45,6 +47,9 @@ def train(net, X_train, y_train, X_test, y_test):
             loss_value.backward()
 
             optimizer.step()
+            
+            if start_index == 4:
+                break
 
         net.eval()
         with torch.no_grad():
@@ -53,6 +58,10 @@ def train(net, X_train, y_train, X_test, y_test):
     
             accuracy = (test_preds.argmax(dim=1) == y_test).float().mean().data.cpu()
             test_accuracy_history.append(accuracy)
+            
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                best_net = net
     
             print(accuracy)
             print(test_loss_history[-1])
@@ -65,9 +74,11 @@ losses = {}
 
 net = HarukaNet()
 
+#best_net = net
+
 accuracies['='], losses['='] = \
     train(net, 
-          X_train, y_train, X_test, y_test)
+          X_train, y_train, X_test, y_test, best_net)
 
 import matplotlib.pyplot as plt
 for experiment_id in accuracies.keys():
@@ -79,11 +90,11 @@ plt.title('Validation Accuracy');
 X_valid = X_valid.to(device)
 y_valid = y_valid.to(device)
 
-net.eval()
+best_net.eval()
 with torch.no_grad():
-    test_preds = net.forward(X_valid)
+    test_preds = best_net.forward(X_valid)
     accuracy = (test_preds.argmax(dim=1) == y_valid).float().mean().data.cpu()
     print(accuracy)
     
     
-torch.save(net.state_dict(), 'my_models/HN.pt')
+torch.save(best_net.state_dict(), 'my_models/HN_c16_P_r5_c32_P_r5.pt')

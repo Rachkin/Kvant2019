@@ -80,3 +80,7 @@ y_valid = torch.LongTensor(y_valid.long())
 X_train = torch.reshape(X_train, (X_train.shape[0], 1 , w, h))
 X_test = torch.reshape(X_test, (X_test.shape[0], 1 , w, h))
 X_valid = torch.reshape(X_valid, (X_valid.shape[0], 1 , w, h))
+
+import numpy as np
+plt.imshow(X_valid[random.randint(0, 1000),0,:,:])
+plt.show()
