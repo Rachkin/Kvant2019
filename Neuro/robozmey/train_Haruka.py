@@ -12,8 +12,8 @@ torch.backends.cudnn.deterministic = True
 
 #############################################
 #device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-device = torch.device('cpu')
-#device = torch.device('cuda:0')
+#device = torch.device('cpu')
+device = torch.device('cuda:0')
 
 def train(net, X_train, y_train, X_test, y_test, bestnet):
     net = net.to(device)
@@ -74,7 +74,7 @@ losses = {}
 
 net = HarukaNet()
 
-#best_net = net
+best_net = net
 
 accuracies['='], losses['='] = \
     train(net, 
@@ -87,8 +87,8 @@ plt.legend()
 plt.title('Validation Accuracy');
 #print("1")
 ########################################
-X_valid = X_valid.to(device)
-y_valid = y_valid.to(device)
+#X_valid = X_valid.to(device)
+#y_valid = y_valid.to(device)
 
 best_net.eval()
 with torch.no_grad():
@@ -97,4 +97,4 @@ with torch.no_grad():
     print(accuracy)
     
     
-torch.save(best_net.state_dict(), 'my_models/HN_c16_P_r5_c32_P_r5.pt')
+torch.save(best_net.state_dict(), 'my_models/HN_c32_PP_r5.pt')
