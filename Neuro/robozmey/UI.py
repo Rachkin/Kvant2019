@@ -73,7 +73,7 @@ while True:
         #print(c_em)
         if p_em != c_em:
             
-            c_log2 = '[' + str(int(p_same_time - s_time)//60) + ':' + str(int(p_same_time - s_time)%60) + ' - ' + str(int(c_time - s_time - 1)//60) + ':' + str(int(c_time - s_time - 1)%60) + ']; ';
+            c_log2 = '[' + str(int(p_same_time - s_time)//60) + ':' + str((p_same_time - s_time)%60) + ' - ' + str(int(c_time - s_time - 1)//60) + ':' + str((c_time - s_time - 1)%60) + ']; ';
             if p_em != 7:
                 c_log2 += str(emotion_dict[p_em])
             else:
@@ -92,13 +92,13 @@ while True:
         
         c_stat = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0}
     p_time = c_time
-    c_time = int(time.time()) 
+    c_time = int(time.time()*2)/2 
     
     
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     
-c_log2 = '[' + str(int(p_same_time - s_time)//60) + ':' + str(int(p_same_time - s_time)%60) + ' - ' + str(int(c_time - s_time - 1)//60) + ':' + str(int(c_time - s_time - 1)%60) + ']; ';
+c_log2 = '[' + str((p_same_time - s_time)//60) + ':' + str((p_same_time - s_time)%60) + ' - ' + str(int(c_time - s_time - 1)//60) + ':' + str((c_time - s_time - 1)%60) + ']; ';
 
 if p_em != 7:
     c_log2 += str(emotion_dict[p_em])
